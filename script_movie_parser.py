@@ -14,7 +14,7 @@ for movie_kaggle in kaggle_data['data']:
   for movie_tmdb in tmdb_data:
     if 'title' in movie_tmdb:
       title_tmdb = movie_tmdb['title']
-    else: 
+    else:
       if 'name' in movie_tmdb:
         title_tmdb = movie_tmdb['name']
       else:
