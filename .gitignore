@@ -1,2 +1,5 @@
 ratings.csv
-full-movies-ratings.json
+movies.json
+*.csv
+*.json
+process-data
