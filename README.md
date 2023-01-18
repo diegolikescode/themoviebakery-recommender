@@ -1,5 +1,6 @@
 # RECOMMENDER
 
-- [x] prepare movie and user's rating data
-- [ ] prepare training IA with tensorflow
-- [ ] configure transfer learning
+## Collaborative Filtering: KNN with Means, Memory Based
+
+- [ ] find users similar to U who have rated the item I
+- [ ] calculating the rating R based on the ratings of users found in the previous step
