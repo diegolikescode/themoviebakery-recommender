@@ -4,17 +4,17 @@ from surprise.model_selection import train_test_split
 from surprise.model_selection import RandomizedSearchCV
 from surprise.dataset import Dataset
 from surprise.reader import Reader
-# from surprise import SVD
-# from surprise import KNNBasic
+from surprise import SVD
+from surprise import KNNBasic
 from surprise import KNNWithMeans
 from collections import defaultdict
 import pandas as pd
 from IPython.display import Markdown, display
 
 reader = Reader()
-# ratings = pd.read_csv('new_sample.csv')
-ratings = pd.read_csv('sample_ratings.csv', dtype={"rating": "int8"})
-ratings['rating'].memory_usage(index=False, deep=True)
+
+ratings = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+                      "userId": "int16", "movieId": "int16", "ratings": "int8"})
 
 surprise_data = Dataset.load_from_df(ratings, reader)
 trainset, testset = train_test_split(
@@ -62,7 +62,7 @@ class collaborative_filtering_recommender_model():
                 str(rmse) + '**', color='brown')
 
         self.top_n = get_top_n(self.pred_test)
-        print('GET TOP N')
+
         self.recommenddf = pd.DataFrame(
             columns=['userId', 'movieId', 'rating'])
         for item in self.top_n:
@@ -77,7 +77,6 @@ class collaborative_filtering_recommender_model():
 
     def cross_validate(self):
         printmd('**Cross Validating the data...**', color='brown')
-        print('IMPRESSIVE, VERY NICE!')
         cv_result = cross_validate(self.model, self.data, n_jobs=-1)
         cv_result = round(cv_result['test_rmse'].mean(), 3)
         printmd('**Mean CV RMSE is ' + str(cv_result) + '**', color='brown')
@@ -98,7 +97,8 @@ class collaborative_filtering_recommender_model():
 
 
 def find_best_model(model, parameters, data):
-    clf = RandomizedSearchCV(model, parameters, n_jobs=-1, measures=['rmse'])
+    clf = RandomizedSearchCV(
+        model, parameters, n_jobs=-1, measures=['rmse', 'mae'])
     clf.fit(data)
     print(clf.best_score)
     print(clf.best_params)
@@ -106,7 +106,7 @@ def find_best_model(model, parameters, data):
     return clf
 
 
-def init_it():
+def init_knn_with_means():
     sim_options = {
         "name": ["msd", "cosine", "pearson", "pearson_baseline"],
         "min_support": [3, 4, 5],
@@ -121,7 +121,37 @@ def init_it():
 
     knnwithmeans_rmse = col_fil_knnwithmeans.fit_and_predict()
     knnwithmeans_cv_rmse = col_fil_knnwithmeans.cross_validate()
-    print('IT IS DONE!')
+    print(knnwithmeans_rmse)
+    print(knnwithmeans_cv_rmse)
+
+    # EXAMPLES OF HOW TO CALL THE MODEL
+    # result_knn_user1 = col_fil_knnwithmeans.recommend(user_id='ANTN61S4L7WG9', n=5)
+    # result_knn_user2 = col_fil_knnwithmeans.recommend(user_id='AYNAH993VDECT', n=5)
+    # result_knn_user3 = col_fil_knnwithmeans.recommend(user_id='A18YMFFJW974QS', n=5)
 
 
-init_it()
+def init_svd():
+    params = {
+        "n_epochs": [5, 10, 15, 20],
+        "lr_all": [0.002, 0.005],
+        "reg_all": [0.4, 0.6]
+    }
+    clf = find_best_model(SVD, params, surprise_data)
+
+    svd = clf.best_estimator['rmse']
+    col_fil_svd = collaborative_filtering_recommender_model(
+        svd, trainset, testset, surprise_data)
+
+    svd_rmse = col_fil_svd.fit_and_predict()
+    svd_cv_rmse = col_fil_svd.cross_validate()
+    print(svd_rmse)
+    print(svd_cv_rmse)
+
+    # EXAMPLES OF HOW TO CALL THE MODEL
+    # result_svd_user1 = col_fil_svd.recommend(user_id='ANTN61S4L7WG9', n=5)
+    # result_svd_user2 = col_fil_svd.recommend(user_id='AYNAH993VDECT', n=5)
+    # result_svd_user3 = col_fil_svd.recommend(user_id='A18YMFFJW974QS', n=5)
+
+
+# init_knn_with_means()
+init_svd()
