@@ -4,8 +4,8 @@ from surprise.model_selection import train_test_split
 from surprise.model_selection import RandomizedSearchCV
 from surprise.dataset import Dataset
 from surprise.reader import Reader
-from surprise import SVD
-from surprise import KNNBasic
+# from surprise import SVD
+# from surprise import KNNBasic
 from surprise import KNNWithMeans
 from collections import defaultdict
 import pandas as pd
@@ -13,6 +13,8 @@ from IPython.display import Markdown, display
 
 reader = Reader()
 ratings = pd.read_csv('sample_ratings.csv')
+# ratings = pd.read_csv('sample_ratings.csv', dtype={"rating": "int8"})
+# ratings['rating'].memory_usage(index=False, deep=True)
 
 surprise_data = Dataset.load_from_df(ratings, reader)
 trainset, testset = train_test_split(
@@ -74,6 +76,7 @@ class collaborative_filtering_recommender_model():
 
     def cross_validate(self):
         printmd('**Cross Validating the data...**', color='brown')
+        print('IMPRESSIVE, VERY NICE!')
         cv_result = cross_validate(self.model, self.data, n_jobs=-1)
         cv_result = round(cv_result['test_rmse'].mean(), 3)
         printmd('**Mean CV RMSE is ' + str(cv_result) + '**', color='brown')
@@ -94,9 +97,7 @@ class collaborative_filtering_recommender_model():
 
 
 def find_best_model(model, parameters, data):
-    print('before clf')
     clf = RandomizedSearchCV(model, parameters, n_jobs=-1, measures=['rmse'])
-    print('after clf')
     clf.fit(data)
     print(clf.best_score)
     print(clf.best_params)
@@ -111,15 +112,13 @@ def init_it():
         "user_based": [True],
     }
     params = {'k': range(30, 50, 1), 'sim_options': sim_options}
-    print('here we go')
     clf = find_best_model(KNNWithMeans, params, surprise_data)
 
-    print('not done yet')
     knnwithmeans = clf.best_estimator['rmse']
     col_fil_knnwithmeans = collaborative_filtering_recommender_model(knnwithmeans, trainset, testset, surprise_data)
-    print('done!')
 
     knnwithmeans_rmse = col_fil_knnwithmeans.fit_and_predict()
     knnwithmeans_cv_rmse = col_fil_knnwithmeans.cross_validate()
+    print('IT IS DONE!')
 
 init_it()

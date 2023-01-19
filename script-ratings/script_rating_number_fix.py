@@ -1,9 +1,9 @@
 import pandas
 
-df = pandas.read_csv('_indeed_rating.csv')
-df.loc[(df['rating'] >= 3), ['rating']] = 1
-df.loc[(df['rating'] < 3), ['rating']] = -1
+df = pandas.read_csv('sample_ratings.csv')
+df.loc[(df['rating'] == 1), ['rating']] = True
+df.loc[(df['rating'] == -1), ['rating']] = False
 
-# print(df.head())
+print(df.dtypes)
 
-df.to_csv('_this-is-rating.csv', index=False)
+df.to_csv('new_sample.csv', index=False)
