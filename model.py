@@ -12,9 +12,9 @@ import pandas as pd
 from IPython.display import Markdown, display
 
 reader = Reader()
-ratings = pd.read_csv('sample_ratings.csv')
-# ratings = pd.read_csv('sample_ratings.csv', dtype={"rating": "int8"})
-# ratings['rating'].memory_usage(index=False, deep=True)
+# ratings = pd.read_csv('new_sample.csv')
+ratings = pd.read_csv('sample_ratings.csv', dtype={"rating": "int8"})
+ratings['rating'].memory_usage(index=False, deep=True)
 
 surprise_data = Dataset.load_from_df(ratings, reader)
 trainset, testset = train_test_split(
@@ -62,11 +62,12 @@ class collaborative_filtering_recommender_model():
                 str(rmse) + '**', color='brown')
 
         self.top_n = get_top_n(self.pred_test)
+        print('GET TOP N')
         self.recommenddf = pd.DataFrame(
-            columns=['userId', 'productId', 'Rating'])
+            columns=['userId', 'movieId', 'rating'])
         for item in self.top_n:
             subdf = pd.DataFrame(self.top_n[item], columns=[
-                                 'productId', 'Rating'])
+                                 'movieId', 'rating'])
             subdf['userId'] = item
             cols = subdf.columns.tolist()
             cols = cols[-1:] + cols[:-1]
@@ -84,9 +85,9 @@ class collaborative_filtering_recommender_model():
 
     def recommend(self, user_id, n=5):
         printmd('**Recommending top ' + str(n) +
-                ' products for userid : ' + user_id + ' ...**', color='brown')
+                ' movies for userid : ' + user_id + ' ...**', color='brown')
 
-        #df = pd.DataFrame(self.top_n[user_id], columns=['productId', 'Rating'])
+        #df = pd.DataFrame(self.top_n[user_id], columns=['movieId', 'rating'])
         #df['UserId'] = user_id
         #cols = df.columns.tolist()
         #cols = cols[-1:] + cols[:-1]
@@ -115,10 +116,12 @@ def init_it():
     clf = find_best_model(KNNWithMeans, params, surprise_data)
 
     knnwithmeans = clf.best_estimator['rmse']
-    col_fil_knnwithmeans = collaborative_filtering_recommender_model(knnwithmeans, trainset, testset, surprise_data)
+    col_fil_knnwithmeans = collaborative_filtering_recommender_model(
+        knnwithmeans, trainset, testset, surprise_data)
 
     knnwithmeans_rmse = col_fil_knnwithmeans.fit_and_predict()
     knnwithmeans_cv_rmse = col_fil_knnwithmeans.cross_validate()
     print('IT IS DONE!')
+
 
 init_it()
