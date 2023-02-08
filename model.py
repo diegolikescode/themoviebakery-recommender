@@ -143,20 +143,13 @@ def init_svd():
     model_svd = collaborative_filtering_recommender_model(
         svd, trainset, testset, surprise_data)
 
-    svd_rmse = model_svd.fit_and_predict()
-    # print(svd_rmse)
+    model_svd.fit_and_predict()
+    model_svd.cross_validate()
 
-    svd_cv_rmse = model_svd.cross_validate()
-    # print(svd_cv_rmse)
     pickle.dump(model_svd, open('model.pkl', 'wb'))
 
     # EXAMPLES OF HOW TO CALL THE MODEL
     # result_svd_user1 = model_svd.recommend(user_id='1554', n=50)
-
-    # movies_arr = []
-    # for _, row in result_svd_user1.iterrows():
-    #     movies_arr.append(row['movieId'])
-    #     print(row['movieId'])
 
 
 # init_knn_with_means()
