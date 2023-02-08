@@ -11,13 +11,34 @@ from collections import defaultdict
 import pandas as pd
 from IPython.display import Markdown, display
 import pickle
+import requests
+import json
 
 reader = Reader()
 
-ratings = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
-                      "userId": "string", "movieId": "string", "ratings": "int8"})
 
-surprise_data = Dataset.load_from_df(ratings, reader)
+def concat_dataframes():
+    # ratings is the static data from the dataset
+    ratings = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+        "userId": "string", "movieId": "string", "ratings": "int8"})
+
+    # get the data from
+    ratings_db = requests.get('http://localhost:8080/api/v1/rating').json()
+    json_list = json.dumps(ratings_db, indent=4)
+
+    json_df = pd.read_json(json_list, dtype={
+        "userId": "string", "movieId": "string", "ratingValue": "int8"}).rename(columns={'ratingValue': 'rating'})
+
+    csv_df = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+        "userId": "string", "movieId": "string", "ratings": "int8"})
+
+    full_df = pd.concat([csv_df, json_df])
+    return full_df
+
+
+full_df = concat_dataframes()
+
+surprise_data = Dataset.load_from_df(full_df, reader)
 trainset, testset = train_test_split(
     surprise_data, test_size=.3, random_state=10)
 

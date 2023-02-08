@@ -6,9 +6,9 @@ import model
 app = Flask(__name__)
 modo = pickle.load(open('model.pkl', 'rb'))
 
+
 @app.route('/api', methods=['GET'])
 def recommend():
-    # data = request.get_json(force=True)
     user_id = request.args.get('userId')
     print(user_id)
     recommendations = modo.recommend(user_id, n=5)
@@ -19,6 +19,7 @@ def recommend():
         print(row['movieId'])
 
     return jsonify(movies_arr)
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
