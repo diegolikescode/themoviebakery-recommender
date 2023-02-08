@@ -10,11 +10,12 @@ from surprise import KNNWithMeans
 from collections import defaultdict
 import pandas as pd
 from IPython.display import Markdown, display
+import pickle
 
 reader = Reader()
 
 ratings = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
-                      "userId": "int16", "movieId": "int16", "ratings": "int8"})
+                      "userId": "string", "movieId": "string", "ratings": "int8"})
 
 surprise_data = Dataset.load_from_df(ratings, reader)
 trainset, testset = train_test_split(
@@ -139,18 +140,23 @@ def init_svd():
     clf = find_best_model(SVD, params, surprise_data)
 
     svd = clf.best_estimator['rmse']
-    col_fil_svd = collaborative_filtering_recommender_model(
+    model_svd = collaborative_filtering_recommender_model(
         svd, trainset, testset, surprise_data)
 
-    svd_rmse = col_fil_svd.fit_and_predict()
-    svd_cv_rmse = col_fil_svd.cross_validate()
-    print(svd_rmse)
-    print(svd_cv_rmse)
+    svd_rmse = model_svd.fit_and_predict()
+    # print(svd_rmse)
+
+    svd_cv_rmse = model_svd.cross_validate()
+    # print(svd_cv_rmse)
+    pickle.dump(model_svd, open('model.pkl', 'wb'))
 
     # EXAMPLES OF HOW TO CALL THE MODEL
-    # result_svd_user1 = col_fil_svd.recommend(user_id='ANTN61S4L7WG9', n=5)
-    # result_svd_user2 = col_fil_svd.recommend(user_id='AYNAH993VDECT', n=5)
-    # result_svd_user3 = col_fil_svd.recommend(user_id='A18YMFFJW974QS', n=5)
+    # result_svd_user1 = model_svd.recommend(user_id='1554', n=50)
+
+    # movies_arr = []
+    # for _, row in result_svd_user1.iterrows():
+    #     movies_arr.append(row['movieId'])
+    #     print(row['movieId'])
 
 
 # init_knn_with_means()
