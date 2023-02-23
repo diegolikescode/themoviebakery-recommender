@@ -11,7 +11,7 @@ modo = pickle.load(open('model.pkl', 'rb'))
 def recommend():
     user_id = request.args.get('userId')
     print(user_id)
-    recommendations = modo.recommend(user_id, n=5)
+    recommendations = modo.recommend(user_id, n=50)
 
     movies_arr = []
     for _, row in recommendations.iterrows():

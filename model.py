@@ -1,7 +1,7 @@
 from surprise import accuracy
 from surprise.model_selection.validation import cross_validate
 from surprise.model_selection import train_test_split
-from surprise.model_selection import RandomizedSearchCV
+from surprise.model_selection import RandomizedSearchCV, GridSearchCV
 from surprise.dataset import Dataset
 from surprise.reader import Reader
 from surprise import SVD
@@ -19,8 +19,8 @@ reader = Reader()
 
 def concat_dataframes():
     # ratings is the static data from the dataset
-    ratings = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
-        "userId": "string", "movieId": "string", "ratings": "int8"})
+    # ratings = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+    #     "userId": "string", "movieId": "string", "ratings": "int8"})
 
     # get the data from
     ratings_db = requests.get('http://localhost:8080/api/v1/rating').json()
@@ -29,7 +29,7 @@ def concat_dataframes():
     json_df = pd.read_json(json_list, dtype={
         "userId": "string", "movieId": "string", "ratingValue": "int8"}).rename(columns={'ratingValue': 'rating'})
 
-    csv_df = pd.read_csv('ratings.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+    csv_df = pd.read_csv('temp.csv', usecols=['userId', 'movieId', 'rating'], dtype={
         "userId": "string", "movieId": "string", "ratings": "int8"})
 
     full_df = pd.concat([csv_df, json_df])
@@ -108,24 +108,94 @@ class collaborative_filtering_recommender_model():
         printmd('**Recommending top ' + str(n) +
                 ' movies for userid : ' + user_id + ' ...**', color='brown')
 
-        #df = pd.DataFrame(self.top_n[user_id], columns=['movieId', 'rating'])
-        #df['UserId'] = user_id
-        #cols = df.columns.tolist()
-        #cols = cols[-1:] + cols[:-1]
-        #df = df[cols].head(n)
-        df = self.recommenddf[self.recommenddf['userId'] == user_id].head(n)
+        df = pd.DataFrame(self.top_n[user_id], columns=['movieId', 'rating'])
+        df['UserId'] = user_id
+        cols = df.columns.tolist()
+        cols = cols[-1:] + cols[:-1]
+        df = df[cols].head(n)
+        # df = self.recommenddf[self.recommenddf['userId'] == user_id].head(n)
         display(df)
         return df
 
 
 def find_best_model(model, parameters, data):
-    clf = RandomizedSearchCV(
+    # clf = RandomizedSearchCV(
+    #     model, parameters, n_jobs=-1, measures=['rmse', 'mae'])
+
+    clf = GridSearchCV(
         model, parameters, n_jobs=-1, measures=['rmse', 'mae'])
+
     clf.fit(data)
     print(clf.best_score)
     print(clf.best_params)
     print(clf.best_estimator)
     return clf
+
+
+def init_knn_basic():
+    params = {
+        'n_epochs': [5, 10, 15, 20],
+        'lr_all': [0.002, 0.005],
+        'reg_all': [0.4, 0.6],
+        'sim_options': {
+            'user_based': [True]
+        }
+    }
+    clf = find_best_model(KNNBasic, params, surprise_data)
+
+    basic = clf.best_estimator['rmse']
+    model_basic = collaborative_filtering_recommender_model(
+        basic, trainset, testset, surprise_data)
+
+    model_basic.fit_and_predict()
+    model_basic.cross_validate()
+    # pickle.dump(model_basic, open('model.pkl', 'wb'))
+
+    ratings_db = requests.get(
+        'localhost:8080/api/v1/rating-by-user?userId=GJ7rXUbap').json()
+    user_ratings = json.dumps(ratings_db, indent=4)
+
+    watched = []
+    for rate in user_ratings:
+        watched.append(rate['movieId'])
+
+
+
+    # EXAMPLES OF HOW TO CALL THE MODEL
+    model_basic.recommend(user_id='GJ7rXUbap', n=20)
+    # result_basic_user1 = model_basic.recommend(user_id='1554', n=50)
+
+
+def init_svd():
+    params = {
+        'n_epochs': [5, 10, 15, 20],
+        'lr_all': [0.002, 0.005],
+        'reg_all': [0.4, 0.6],
+        'sim_options': {
+            'user_based': True
+        }
+    }
+    clf = find_best_model(SVD, params, surprise_data)
+
+    svd = clf.best_estimator['rmse']
+    model_svd = collaborative_filtering_recommender_model(
+        svd, trainset, testset, surprise_data)
+
+    model_svd.fit_and_predict()
+    model_svd.cross_validate()
+    # pickle.dump(model_svd, open('model.pkl', 'wb'))
+
+    ratings_db = requests.get(
+        'localhost:8080/api/v1/rating-by-user?userId=GJ7rXUbap').json()
+    user_ratings = json.dumps(ratings_db, indent=4)
+
+    watched = []
+    for rate in user_ratings:
+        watched.append(rate['movieId'])
+
+    # EXAMPLES OF HOW TO CALL THE MODEL
+    # model_svd.recommend(user_id='GJ7rXUbap', n=20)
+    # result_svd_user1 = model_svd.recommend(user_id='1554', n=50)
 
 
 def init_knn_with_means():
@@ -138,36 +208,13 @@ def init_knn_with_means():
     clf = find_best_model(KNNWithMeans, params, surprise_data)
 
     knnwithmeans = clf.best_estimator['rmse']
-    col_fil_knnwithmeans = collaborative_filtering_recommender_model(
+    model_knnmeans = collaborative_filtering_recommender_model(
         knnwithmeans, trainset, testset, surprise_data)
 
-    knnwithmeans_rmse = col_fil_knnwithmeans.fit_and_predict()
-    knnwithmeans_cv_rmse = col_fil_knnwithmeans.cross_validate()
-    print(knnwithmeans_rmse)
-    print(knnwithmeans_cv_rmse)
+    model_knnmeans.fit_and_predict()
+    model_knnmeans.cross_validate()
 
-    # EXAMPLES OF HOW TO CALL THE MODEL
-    # result_knn_user1 = col_fil_knnwithmeans.recommend(user_id='ANTN61S4L7WG9', n=5)
-    # result_knn_user2 = col_fil_knnwithmeans.recommend(user_id='AYNAH993VDECT', n=5)
-    # result_knn_user3 = col_fil_knnwithmeans.recommend(user_id='A18YMFFJW974QS', n=5)
-
-
-def init_svd():
-    params = {
-        "n_epochs": [5, 10, 15, 20],
-        "lr_all": [0.002, 0.005],
-        "reg_all": [0.4, 0.6]
-    }
-    clf = find_best_model(SVD, params, surprise_data)
-
-    svd = clf.best_estimator['rmse']
-    model_svd = collaborative_filtering_recommender_model(
-        svd, trainset, testset, surprise_data)
-
-    model_svd.fit_and_predict()
-    model_svd.cross_validate()
-
-    pickle.dump(model_svd, open('model.pkl', 'wb'))
+    pickle.dump(model_knnmeans, open('model.pkl', 'wb'))
 
     # EXAMPLES OF HOW TO CALL THE MODEL
     # result_svd_user1 = model_svd.recommend(user_id='1554', n=50)
@@ -175,3 +222,4 @@ def init_svd():
 
 # init_knn_with_means()
 init_svd()
+init_knn_basic()
