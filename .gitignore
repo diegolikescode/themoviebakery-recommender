@@ -3,3 +3,4 @@ movies.json
 *.csv
 *.json
 process-data
+*.pkl
