@@ -6,20 +6,27 @@ from collections import defaultdict
 from operator import itemgetter
 import heapq
 
-import os
-import csv
-
 import json
 import pandas as pd
+import requests
 
 # Load in the movie ratings and return a dataset.
+
+
 def load_dataset():
     # userId,movieId,rating
     reader = Reader()
-    df = pd.read_csv('temp.csv', usecols=['userId', 'movieId', 'rating'], dtype={
-        'userId': 'string', 'movieId': 'string', 'ratings': 'int8'})
+    dataset_df = pd.read_csv('temp70.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+        'userId': 'string', 'movieId': 'string', 'ratings': 'float64'})
 
-    ratings_dataset = Dataset.load_from_df(df, reader=reader)
+    ratings_db = requests.get('http://localhost:8080/api/v1/rating').json()
+    json_list = json.dumps(ratings_db, indent=4)
+
+    json_df = pd.read_json(json_list, dtype={
+        "userId": "string", "movieId": "string", "ratingValue": "float64"}).rename(columns={'ratingValue': 'rating'})
+
+    full_df = pd.concat([json_df, dataset_df])
+    ratings_dataset = Dataset.load_from_df(full_df, reader=reader)
 
     # Lookup a movie's name with it's Movielens ID as key
     official_json = open('movies.json')
@@ -42,17 +49,19 @@ def load_dataset():
     # Return both the dataset and lookup dict in tuple
     return (ratings_dataset, movieID_to_name)
 
+
 dataset, movieID_to_name = load_dataset()
 
 # Build a full Surprise training set from dataset
 trainset = dataset.build_full_trainset()
 
 similarity_matrix = KNNBasic(sim_options={
-        'name': 'cosine',
-        'user_based': False
-        })\
-        .fit(trainset)\
-        .compute_similarities()
+    'name': 'cosine',
+    'user_based': False
+})\
+    .fit(trainset)\
+    .compute_similarities()
+
 
 # Pick a random user ID, has to be a numeric string.
 # Play around and see how the final recommendations change
@@ -85,23 +94,26 @@ candidates = defaultdict(float)
 
 for itemID, rating in k_neighbors:
     try:
-      similaritities = similarity_matrix[itemID]
-      for innerID, score in enumerate(similaritities):
-          candidates[innerID] += score * (rating / 5.0)
+        similaritities = similarity_matrix[itemID]
+        for innerID, score in enumerate(similaritities):
+            candidates[innerID] += score * (rating / 5.0)
     except:
-      continue
+        continue
 
 # Utility we'll use later.
+
+
 def getMovieName(movieID):
-  if int(movieID) in movieID_to_name:
-    return movieID_to_name[int(movieID)]
-  else:
-      return ""
+    if int(movieID) in movieID_to_name:
+        return movieID_to_name[int(movieID)]
+    else:
+        return ""
+
 
 # Build a dictionary of movies the user has watched
 watched = {}
 for itemID, rating in trainset.ur[test_subject_iid]:
-  watched[itemID] = 1
+    watched[itemID] = 1
 
 # Add items to list of user's recommendations
 # If they are similar to their favorite movies,
@@ -110,10 +122,11 @@ recommendations = []
 
 position = 0
 for itemID, rating_sum in sorted(candidates.items(), key=itemgetter(1), reverse=True):
-  if not itemID in watched:
-    recommendations.append(getMovieName(trainset.to_raw_iid(itemID)))
-    position += 1
-    if (position > 10): break # We only want top 10
+    if not itemID in watched:
+        recommendations.append(getMovieName(trainset.to_raw_iid(itemID)))
+        position += 1
+        if (position > 10):
+            break  # We only want top 10
 
 for rec in recommendations:
-  print("Movie: ", rec)
+    print("Movie: ", rec)

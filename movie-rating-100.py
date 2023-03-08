@@ -5,7 +5,7 @@ import json
 movies_json = open('movies.json')
 all_movies = json.load(movies_json)
 
-ratings_csv = pd.read_csv('ratings-temp.csv', usecols=['userId', 'movieId', 'rating'], dtype={
+ratings_csv = pd.read_csv('temp.csv', usecols=['userId', 'movieId', 'rating'], dtype={
     'userId': 'string', 'movieId': 'string', 'ratings': 'int8'})
 
 print(len(all_movies))
@@ -32,4 +32,4 @@ for num in range(movie_qnt):
     #           str(new_df.shape[0]) + '    ' + str(i))
 
 full_df = pd.concat(all_dfs)
-full_df.to_csv('temp.csv', index=False)
+full_df.to_csv('temp70.csv', index=False)
