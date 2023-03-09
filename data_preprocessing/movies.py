@@ -17,7 +17,7 @@ ratings_df['newUserId'] = 0
 
 for index, row in movies_df.iterrows():
     ratings_df.loc[ratings_df['movieId'] == str(row['id']),
-                    'newMovieId'] = row['newMovieId']
+                   'newMovieId'] = row['newMovieId']
     print(index, '/', len(movies_df))
 
 print('------------------------------')
