@@ -2,30 +2,33 @@ import pickle
 import numpy as np
 from sortedcontainers import SortedList
 
-import os
-if not os.path.exists('bin/movie2user.json') or \
-        not os.path.exists('bin/user2movie.json') or \
-        not os.path.exists('bin/usermovie2ratings.json') or \
-        not os.path.exists('bin/usermovie2ratings_test.json'):
-    import data_preprocessing.data_preprocessing
-    # import data_preprocessing.a_unique_movie_id
+# import os
+# if not os.path.exists('bin/movie2user.json') or \
+#         not os.path.exists('bin/user2movie.json') or \
+#         not os.path.exists('bin/usermovie2ratings.json') or \
+#         not os.path.exists('bin/usermovie2ratings_test.json'):
+#     import .data_preprocessing
+# import data_preprocessing.a_unique_movie_id
 
-with open('bin/user2movie.json', 'rb') as file:
+with open('../../data/data-for-analysis/bin/user2movie.json', 'rb') as file:
     user2movie = pickle.load(file)
 
-with open('bin/movie2user.json', 'rb') as file:
+with open('../../data/data-for-analysis/bin/movie2user.json', 'rb') as file:
     movie2user = pickle.load(file)
 
-with open('bin/usermovie2ratings.json', 'rb') as file:
+with open('../../data/data-for-analysis/bin/usermovie2ratings.json', 'rb') as file:
     usermovie2ratings = pickle.load(file)
 
-with open('bin/usermovie2ratings_test.json', 'rb') as file:
+with open('../../data/data-for-analysis/bin/usermovie2ratings_test.json', 'rb') as file:
     usermovie2ratings_test = pickle.load(file)
 
-N = np.max(list(user2movie.keys())) + 1
 
-m1 = np.max(list(user2movie.keys())) + 1
-m2 = np.max([m for (u, m), r in usermovie2ratings_test.items()])
+N = len(list(user2movie.keys()))
+
+m1 = len(list(user2movie.keys()))
+xama = [m for (u, m), r in usermovie2ratings_test.items()]
+print(xama)
+m2 = len()
 
 M = max(m1, m2) + 1
 
@@ -52,7 +55,7 @@ for i in range(N):
     sigma_i = np.sqrt(dev_i_values.dot(dev_i_values))
 
     averages.append(avg_i)
-    averages.append(dev_i)
+    deviations.append(dev_i)
 
     sortedList = SortedList()
     for j in range(N):
@@ -74,6 +77,9 @@ for i in range(N):
                     sigma_j = np.sqrt(dev_j_values.dot(dev_j_values))
 
                     numerator = sum(dev_i[m] * dev_j[m] for m in common_movies)
+
+                    if (sigma_i * sigma_j) == 0:
+                        print('FUCK!')
                     w_ij = float(numerator) / (sigma_i * sigma_j)
 
                     sortedList.add((-w_ij, j))
@@ -82,10 +88,12 @@ for i in range(N):
             except KeyError:
                 key_errs += 1
                 pass
-
+    print('APPENDING')
     neighbors.append(sortedList)
 
+
 def predict(i, m):
+    print('PREDICTING')
     numerator = 0
     denominator = 0
     for neg_w, j in neighbors[i]:
