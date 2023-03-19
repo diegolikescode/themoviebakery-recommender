@@ -1,9 +1,9 @@
 # set newMovieId to the ratings dataset
 import pandas as pd
-import numpy as np
 
-# movies = json.load(open('../../data/treated-data/movies_kaggleId.json'))
 ratings_df = pd.read_csv('../../data/data-for-analysis/ratings-smaller.csv')
+
+# TREATING NEW MOVIE ID
 ratings_df['newMovieId'] = ratings_df['movieId'].copy()
 
 unique_movies = ratings_df['movieId'].unique()
@@ -15,4 +15,16 @@ for i in range(len(new_ids)):
 
 ratings_df['newMovieId'].replace(movie2newId, inplace=True)
 
-print(ratings_df)
+# TREATING NEW USER ID
+ratings_df['newUserId'] = ratings_df['userId'].copy()
+
+unique_users = ratings_df['userId'].unique()
+new_ids = [0] * len(unique_users)
+user2newId = {}
+for i in range(len(new_ids)):
+    user2newId[unique_users[i]] = i
+    new_ids[i] = i
+
+ratings_df['newUserId'].replace(user2newId, inplace=True)
+
+ratings_df.to_csv('../../data/data-for-analysis/ratings-smaller-with-new-ids.csv', index=False)
