@@ -1,11 +1,12 @@
 import pickle
 import pandas as pd
+import numpy as np
 from sklearn.utils import shuffle
 
-df = pd.read_csv('../../data/data-for-analysis/ratings-smaller.csv')
+df = pd.read_csv('../../data/data-for-analysis/ratings-smaller-with-new-ids.csv')
 
-N = df.userId.count()
-M = df.movieId.count()
+N = np.max(df.newUserId)
+M = np.max(df.newMovieId)
 
 df = shuffle(df)
 cutoff = int(0.8*len(df))
@@ -25,8 +26,8 @@ def update_user2movie_and_movie2user(row):
     if count % 100_000 == 0:
         print('process %.3f' % (float(count)/cutoff))
 
-    i = int(row.userId)
-    j = int(row.movieId)
+    i = int(row.newUserId)
+    j = int(row.newMovieId)
     if i not in user2movie:
         user2movie[i] = [j]
     else:
@@ -52,8 +53,8 @@ def update_usermovie2ratings__test(row):
     if count % 100_000 == 0:
         print('process %.3f' % (float(count)/len(df_test)))
 
-    i = int(row.userId)
-    j = int(row.movieId)
+    i = int(row.newUserId)
+    j = int(row.newMovieId)
     usermovie2ratings_test[i, j] = row.rating
 
 

@@ -23,12 +23,10 @@ with open('../../data/data-for-analysis/bin/usermovie2ratings_test.json', 'rb') 
     usermovie2ratings_test = pickle.load(file)
 
 
-N = len(list(user2movie.keys()))
+N = np.max(list(user2movie.keys())) + 1
 
-m1 = len(list(user2movie.keys()))
-xama = [m for (u, m), r in usermovie2ratings_test.items()]
-print(xama)
-m2 = len()
+m1 = np.max(list(user2movie.keys())) + 1
+m2 = np.max([m for (u, m), r in usermovie2ratings_test.items()])
 
 M = max(m1, m2) + 1
 
