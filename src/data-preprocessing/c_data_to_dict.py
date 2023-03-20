@@ -1,12 +1,12 @@
 import pickle
 import pandas as pd
-import numpy as np
 from sklearn.utils import shuffle
 
-df = pd.read_csv('../../data/data-for-analysis/ratings-smaller-with-new-ids.csv')
+df = pd.read_csv(
+    '../../data/data-for-analysis/ratings-smaller-with-new-ids.csv')
 
-N = np.max(df.newUserId)
-M = np.max(df.newMovieId)
+N = df.newUserId.max() + 1
+M = df.newMovieId.max() + 1
 
 df = shuffle(df)
 cutoff = int(0.8*len(df))
