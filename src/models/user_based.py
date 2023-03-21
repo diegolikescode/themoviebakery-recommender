@@ -73,12 +73,11 @@ for i in range(N):
             except KeyError:
                 key_errs += 1
                 pass
-    print('APPENDING', i, '/', N)
+
     neighbors.append(sortedList)
 
 
 def predict(i, m):
-    print('PREDICTING')
     numerator = 0
     denominator = 0
     for neg_w, j in neighbors[i]:
@@ -102,7 +101,7 @@ train_predictions = []
 train_targets = []
 for (i, m), target in usermovie2ratings.items():
     prediction = predict(i, m)
-    print(prediction, i, m)
+
     train_predictions.append(prediction)
     train_targets.append(target)
 
