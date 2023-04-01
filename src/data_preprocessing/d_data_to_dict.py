@@ -3,10 +3,10 @@ import pandas as pd
 from sklearn.utils import shuffle
 
 df = pd.read_csv(
-    '../../data/data-for-analysis/ratings-smaller-with-new-ids.csv')
+    '../../data/data-for-analysis/ratings-small-with-database.csv')
 
-N = df.newUserId.max() + 1
-M = df.newMovieId.max() + 1
+N = df.userId.max() + 1
+M = df.movieId.max() + 1
 
 df = shuffle(df)
 cutoff = int(0.8*len(df))
@@ -26,8 +26,8 @@ def update_user2movie_and_movie2user(row):
     if count % 100_000 == 0:
         print('process %.3f' % (float(count)/cutoff))
 
-    i = int(row.newUserId)
-    j = int(row.newMovieId)
+    i = int(row.userId)
+    j = int(row.movieId)
     if i not in user2movie:
         user2movie[i] = [j]
     else:
@@ -53,8 +53,8 @@ def update_usermovie2ratings__test(row):
     if count % 100_000 == 0:
         print('process %.3f' % (float(count)/len(df_test)))
 
-    i = int(row.newUserId)
-    j = int(row.newMovieId)
+    i = int(row.userId)
+    j = int(row.movieId)
     usermovie2ratings_test[i, j] = row.rating
 
 

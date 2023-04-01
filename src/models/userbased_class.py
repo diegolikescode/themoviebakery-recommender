@@ -1,9 +1,6 @@
 import pickle
 import numpy as np
 from sortedcontainers import SortedList
-# import sys
-# sys.path.append('..')
-
 
 class user_based_model():
     user2movie = {}
@@ -36,7 +33,6 @@ class user_based_model():
         with open('../../data/data-for-analysis/bin/usermovie2ratings_test.json', 'rb') as file:
             self.usermovie2ratings_test = pickle.load(file)
 
-
     def calculate_user_neighbors(self):
         N = np.max(list(self.user2movie.keys())) + 1
 
@@ -57,7 +53,7 @@ class user_based_model():
                     i, movie)] for movie in movies_i}
                 avg_i = np.mean(list(ratings_i.values()))
                 dev_i = {movie: (rating - avg_i)
-                        for movie, rating in ratings_i.items()}
+                         for movie, rating in ratings_i.items()}
                 dev_i_values = np.array(list(dev_i.values()))
                 sigma_i = np.sqrt(dev_i_values.dot(dev_i_values))
 
@@ -82,7 +78,8 @@ class user_based_model():
                                 }
 
                                 dev_j_values = np.array(list(dev_j.values()))
-                                sigma_j = np.sqrt(dev_j_values.dot(dev_j_values))
+                                sigma_j = np.sqrt(
+                                    dev_j_values.dot(dev_j_values))
 
                                 numerator = sum(dev_i[m] * dev_j[m]
                                                 for m in common_movies)
@@ -97,7 +94,7 @@ class user_based_model():
 
                 self.neighbors.append(sortedList)
                 count += 1
-                print(count, '/', N)
+                print(N, '|', count)
             except KeyError:
                 print('KeyError', i)
                 pass
@@ -105,6 +102,8 @@ class user_based_model():
     def predict(self, i, m):
         numerator = 0
         denominator = 0
+
+        print('I INSIDE PREDICT', i)
         for neg_w, j in self.neighbors[i]:
             try:
                 numerator += -neg_w * self.deviations[j][m]
@@ -139,8 +138,13 @@ class user_based_model():
         t = np.array(t)
         return np.mean((p - t)**2)
 
-    def predict_for_user():
-        print('TODO')
+    def predict_for_user(self, user_id):
+        user_id = 500
+        movies = self.movie2user.keys()
+
+        for mov in movies:
+            pred = self.predict(i=user_id, m=mov)
+            print(pred)
 
 
 def doit():
@@ -157,6 +161,8 @@ def doit():
 
     print('TRAINING MSE:', training_mse)
     print('TESTING MSE:', testing_mse)
+
+    bravo.predict_for_user(user_id=4)
 
 
 doit()
