@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 from sortedcontainers import SortedList
 
+
 class user_based_model():
     user2movie = {}
     movie2user = {}
@@ -10,9 +11,9 @@ class user_based_model():
 
     K = 25
     limit = 5
-    neighbors = []
-    averages = []
-    deviations = []
+    neighbors = {}   # to dict
+    averages = {}    # to dict
+    deviations = {}  # to dict
 
     train_predictions = []
     train_targets = []
@@ -34,17 +35,17 @@ class user_based_model():
             self.usermovie2ratings_test = pickle.load(file)
 
     def calculate_user_neighbors(self):
-        N = np.max(list(self.user2movie.keys())) + 1
+        N = len(list(self.user2movie.keys()))
 
-        m1 = np.max(list(self.movie2user.keys())) + 1
-        m2 = np.max([m for (u, m), r in self.usermovie2ratings_test.items()])
-        M = max(m1, m2) + 1
+        m1 = len(list(self.movie2user.keys()))
+        m2 = len([m for (u, m), r in self.usermovie2ratings_test.items()])
+        M = max(m1, m2)
 
         print('N:', N, 'M: ', M)
 
         key_errs = 0
         count = 0
-        for i in range(N):
+        for i in list(self.user2movie.keys()):
             try:
                 movies_i = self.user2movie[i]
                 movie_i_set = set(movies_i)
@@ -57,11 +58,12 @@ class user_based_model():
                 dev_i_values = np.array(list(dev_i.values()))
                 sigma_i = np.sqrt(dev_i_values.dot(dev_i_values))
 
-                self.averages.append(avg_i)
-                self.deviations.append(dev_i)
+                self.averages[i] = avg_i
+                self.deviations[i] = dev_i
 
                 sortedList = SortedList()
-                for j in range(N):
+                # for j in range(i, N): # more efficient
+                for j in list(self.user2movie.keys()):
                     if j != i:
                         try:
                             movies_j = self.user2movie[j]
@@ -92,7 +94,8 @@ class user_based_model():
                             key_errs += 1
                             pass
 
-                self.neighbors.append(sortedList)
+                self.neighbors[i] = sortedList
+
                 count += 1
                 print(N, '|', count)
             except KeyError:
@@ -103,7 +106,6 @@ class user_based_model():
         numerator = 0
         denominator = 0
 
-        print('I INSIDE PREDICT', i)
         for neg_w, j in self.neighbors[i]:
             try:
                 numerator += -neg_w * self.deviations[j][m]
@@ -139,7 +141,7 @@ class user_based_model():
         return np.mean((p - t)**2)
 
     def predict_for_user(self, user_id):
-        user_id = 500
+        user_id += 499
         movies = self.movie2user.keys()
 
         for mov in movies:

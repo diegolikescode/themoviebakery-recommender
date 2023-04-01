@@ -25,5 +25,4 @@ for i in range(len(new_ids)):
     new_ids[i] = i
 
 ratings_df['userId'].replace(user2newId, inplace=True)
-print(ratings_df)
 ratings_df.to_csv('../../data/data-for-analysis/ratings-smaller-with-new-ids.csv', index=False)
