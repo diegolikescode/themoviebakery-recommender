@@ -150,28 +150,9 @@ class user_based_model():
 
         for mov in movies:
             pred = self.predict(i=user_id, m=mov)
-            predictions.append({movie_id: mov, prediction: pred})
+            predictions.append({'movie_id': mov, 'prediction': pred})
 
-        sorted_predictions = sorted(predictions, key=lambda t: t['prediction'])
+        sorted_predictions = sorted(
+            predictions, key=lambda t: t['prediction'], reverse=True)
+
         return sorted_predictions
-
-
-# def doit():
-#     bravo = user_based_model()
-#     print('calculating_user_neighbors')
-#     bravo.calculate_user_neighbors()
-#     print('training_and_testing')
-#     bravo.train_and_test()
-#     print('calculating_mse')
-#     training_mse = bravo.calculate_mse(
-#         bravo.train_predictions, bravo.train_targets)
-#     testing_mse = bravo.calculate_mse(
-#         bravo.test_predictions, bravo.test_targets)
-
-#     print('TRAINING MSE:', training_mse)
-#     print('TESTING MSE:', testing_mse)
-
-#     bravo.predict_for_user(user_id=4)
-
-
-# doit()

@@ -6,7 +6,7 @@ import os
 dirname = os.path.dirname(__file__)
 
 df = pd.read_csv(
-    '../../data/data-for-analysis/ratings-small-with-database.csv')
+    os.path.join(dirname, '../../data/data-for-analysis/ratings-small-with-database.csv'))
 
 N = df.userId.max() + 1
 M = df.movieId.max() + 1
