@@ -1,7 +1,11 @@
 # set newMovieId to the ratings dataset
 import pandas as pd
+import os
 
-ratings_df = pd.read_csv('../../data/data-for-analysis/ratings-smaller.csv')
+dirname = os.path.dirname(__file__)
+
+ratings_df = pd.read_csv(os.path.join(
+    dirname, '../../data/data-for-analysis/ratings-smaller.csv'))
 
 # TREATING NEW MOVIE ID
 # ratings_df['newMovieId'] = ratings_df['movieId'].copy()
@@ -25,4 +29,5 @@ for i in range(len(new_ids)):
     new_ids[i] = i
 
 ratings_df['userId'].replace(user2newId, inplace=True)
-ratings_df.to_csv('../../data/data-for-analysis/ratings-smaller-with-new-ids.csv', index=False)
+ratings_df.to_csv(os.path.join(
+    dirname, '../../data/data-for-analysis/ratings-smaller-with-new-ids.csv'), index=False)

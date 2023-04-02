@@ -1,6 +1,9 @@
 import pickle
 import numpy as np
 from sortedcontainers import SortedList
+import os
+
+dirname = os.path.dirname(__file__)
 
 
 class user_based_model():
@@ -11,9 +14,9 @@ class user_based_model():
 
     K = 25
     limit = 5
-    neighbors = {}   # to dict
-    averages = {}    # to dict
-    deviations = {}  # to dict
+    neighbors = {}
+    averages = {}
+    deviations = {}
 
     train_predictions = []
     train_targets = []
@@ -22,16 +25,16 @@ class user_based_model():
     test_targets = []
 
     def __init__(self):
-        with open('../../data/data-for-analysis/bin/user2movie.json', 'rb') as file:
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/user2movie.json'), 'rb') as file:
             self.user2movie = pickle.load(file)
 
-        with open('../../data/data-for-analysis/bin/movie2user.json', 'rb') as file:
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/movie2user.json'), 'rb') as file:
             self.movie2user = pickle.load(file)
 
-        with open('../../data/data-for-analysis/bin/usermovie2ratings.json', 'rb') as file:
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings.json'), 'rb') as file:
             self.usermovie2ratings = pickle.load(file)
 
-        with open('../../data/data-for-analysis/bin/usermovie2ratings_test.json', 'rb') as file:
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings_test.json'), 'rb') as file:
             self.usermovie2ratings_test = pickle.load(file)
 
     def calculate_user_neighbors(self):
@@ -140,31 +143,35 @@ class user_based_model():
         t = np.array(t)
         return np.mean((p - t)**2)
 
-    def predict_for_user(self, user_id):
+    def recommend_movies_for_users(self, user_id):
+        predictions = []
         user_id += 499
         movies = self.movie2user.keys()
 
         for mov in movies:
             pred = self.predict(i=user_id, m=mov)
-            print(pred)
+            predictions.append({movie_id: mov, prediction: pred})
+
+        sorted_predictions = sorted(predictions, key=lambda t: t['prediction'])
+        return sorted_predictions
 
 
-def doit():
-    bravo = user_based_model()
-    print('calculating_user_neighbors')
-    bravo.calculate_user_neighbors()
-    print('training_and_testing')
-    bravo.train_and_test()
-    print('calculating_mse')
-    training_mse = bravo.calculate_mse(
-        bravo.train_predictions, bravo.train_targets)
-    testing_mse = bravo.calculate_mse(
-        bravo.test_predictions, bravo.test_targets)
+# def doit():
+#     bravo = user_based_model()
+#     print('calculating_user_neighbors')
+#     bravo.calculate_user_neighbors()
+#     print('training_and_testing')
+#     bravo.train_and_test()
+#     print('calculating_mse')
+#     training_mse = bravo.calculate_mse(
+#         bravo.train_predictions, bravo.train_targets)
+#     testing_mse = bravo.calculate_mse(
+#         bravo.test_predictions, bravo.test_targets)
 
-    print('TRAINING MSE:', training_mse)
-    print('TESTING MSE:', testing_mse)
+#     print('TRAINING MSE:', training_mse)
+#     print('TESTING MSE:', testing_mse)
 
-    bravo.predict_for_user(user_id=4)
+#     bravo.predict_for_user(user_id=4)
 
 
-doit()
+# doit()

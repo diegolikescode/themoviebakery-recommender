@@ -1,10 +1,15 @@
 import numpy as np
 from flask import Flask, request, jsonify
 import pickle
-import models.userbased_class
+from models.userbased_class import user_based_model
+import data_preprocessing.a_shrink_ratings
+import data_preprocessing.b_userandmovie_newId
+import data_preprocessing.c_add_database_to_ratings
+import data_preprocessing.d_data_to_dict
+
 
 app = Flask(__name__)
-recommender = models.userbased_class()
+recommender = user_based_model()
 
 
 def start_model():
@@ -19,25 +24,20 @@ def start_model():
     testing_mse = recommender.calculate_mse(
         recommender.test_predictions, recommender.test_targets)
 
-
     # recommender.predict_for_user(user_id=4)
 
     print('TRAINING MSE:', training_mse)
     print('TESTING MSE:', testing_mse)
 
+start_model()
 
 @app.route('/api', methods=['GET'])
 def recommend():
-    user_id = request.args.get('userId')
+    user_id = int(request.args.get('userId'))
     print(user_id)
-    recommendations = modo.recommend(user_id, n=50)
+    recommendations = recommender.recommend_movies_for_users(user_id)
 
-    movies_arr = []
-    for _, row in recommendations.iterrows():
-        movies_arr.append(row['movieId'])
-        print(row['movieId'])
-
-    return jsonify(movies_arr)
+    return jsonify(recommendations)
 
 
 if __name__ == '__main__':

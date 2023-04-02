@@ -1,3 +1,7 @@
+import os
+
+os.path.join(os.path.dirname(__file__))
+
 # def import_all():
 print('RUNNING a_shrink_ratings')
 import a_shrink_ratings

@@ -1,6 +1,9 @@
 import pickle
 import pandas as pd
 from sklearn.utils import shuffle
+import os
+
+dirname = os.path.dirname(__file__)
 
 df = pd.read_csv(
     '../../data/data-for-analysis/ratings-small-with-database.csv')
@@ -60,14 +63,14 @@ def update_usermovie2ratings__test(row):
 
 df_test.apply(update_usermovie2ratings__test, axis=1)
 
-with open('../../data/data-for-analysis/bin/user2movie.json', 'wb') as file:
+with open(os.path.join(dirname, '../../data/data-for-analysis/bin/user2movie.json'), 'wb') as file:
     pickle.dump(user2movie, file)
 
-with open('../../data/data-for-analysis/bin/movie2user.json', 'wb') as file:
+with open(os.path.join(dirname, '../../data/data-for-analysis/bin/movie2user.json'), 'wb') as file:
     pickle.dump(movie2user, file)
 
-with open('../../data/data-for-analysis/bin/usermovie2ratings.json', 'wb') as file:
+with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings.json'), 'wb') as file:
     pickle.dump(usermovie2ratings, file)
 
-with open('../../data/data-for-analysis/bin/usermovie2ratings_test.json', 'wb') as file:
+with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings_test.json'), 'wb') as file:
     pickle.dump(usermovie2ratings_test, file)
