@@ -3,14 +3,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pickle
 import os
-print('a_shrink_ratings')
-import data_preprocessing.a_shrink_ratings
-print('b_userandmovie_newId')
-import data_preprocessing.b_userandmovie_newId
-print('c_add_database_to_ratings')
-import data_preprocessing.c_add_database_to_ratings
-print('d_data_to_dict')
-import data_preprocessing.d_data_to_dict
+# print('a_shrink_ratings')
+# import data_preprocessing.a_shrink_ratings
+# print('b_userandmovie_newId')
+# import data_preprocessing.b_userandmovie_newId
+# print('c_add_database_to_ratings')
+# import data_preprocessing.c_add_database_to_ratings
+# print('d_data_to_dict')
+# import data_preprocessing.d_data_to_dict
 from models.userbased_class import user_based_model
 
 

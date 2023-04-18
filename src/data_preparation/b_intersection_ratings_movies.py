@@ -1,6 +1,5 @@
 # script to remove ratings from the movies that didn't existed in the tmdb-movies dataframe
 import pandas as pd
-import requests
 
 # ratings_df_file = requests.get(
 #     'https://bucket-recommender.s3.us-east-1.amazonaws.com/kaggle-ratings.csv')
