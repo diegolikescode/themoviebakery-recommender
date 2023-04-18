@@ -1,11 +1,17 @@
 # script to intersect TMDB movies and Kaggle's Movielens dataset
 import pandas as pd
 import json
+import requests
 
-tmdb_movies_file = open('../../data/raw-data/tmdb-movies.json')
-tmdb_movies = json.load(tmdb_movies_file)
+# tmdb_movies_file = open('../../data/raw-data/tmdb-movies.json')
+tmdb_movies_file = requests.get('https://bucket-recommender.s3.us-east-1.amazonaws.com/tmdb-movies.json', headers={'Accept': 'application/json'})
+tmdb_movies = tmdb_movies_file.json()
+# tmdb_movies_file_pandas = 'https://bucket-recommender.s3.us-east-1.amazonaws.com/tmdb-movies.json'
 
-kaggle_movies = pd.read_csv('../../data/raw-data/kaggle-movies.csv')
+# kaggle_movies_file = requests.get('https://bucket-recommender.s3.us-east-1.amazonaws.com/kaggle-movies.csv')
+kaggle_movies_file = 'https://bucket-recommender.s3.us-east-1.amazonaws.com/kaggle-movies.csv'
+# kaggle_movies = pd.read_csv('../../data/raw-data/kaggle-movies.csv')
+kaggle_movies = pd.read_csv(kaggle_movies_file)
 
 kaggle_movies['title'] = kaggle_movies.apply(
     lambda row: row[1][slice(len(row[1]) - 7)], axis=1)
