@@ -14,11 +14,15 @@ req_ratings = requests.get(
 json_list = json.dumps(req_ratings, indent=4)
 
 ratings_db = pd.read_json(json_list)
-ratings_db.drop(axis=1, labels=['created_at',
-                'updated_at', 'ratingId'], inplace=True)
-ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
-ratings_db['userId'] += 499
+if len(ratings_db) != 0:
+    ratings_db.drop(axis=1, labels=['created_at',
+                    'updated_at', 'ratingId'], inplace=True)
+    ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
+    ratings_db['userId'] += 499
 
-ratings_df = pd.concat([ratings_local, ratings_db])
-ratings_df.to_csv(os.path.join(
-    dirname, '../../data/data-for-analysis/ratings-small-with-database.csv'), index=False)
+    ratings_df = pd.concat([ratings_local, ratings_db])
+    ratings_df.to_csv(os.path.join(
+        dirname, '../../data/data-for-analysis/ratings-small-with-database.csv'), index=False)
+else:
+    ratings_local.to_csv(os.path.join(
+        dirname, '../../data/data-for-analysis/ratings-small-with-database.csv'), index=False)
