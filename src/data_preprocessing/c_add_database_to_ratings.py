@@ -10,7 +10,8 @@ ratings_local = pd.read_csv(os.path.join(
     dirname, '../../data/data-for-analysis/ratings-smaller-with-new-ids.csv'))
 
 req_ratings = requests.get(
-    'http://localhost:8080/api/v1/rating/get-all').json()
+    # 'http://localhost:8080/api/v1/rating/get-all').json()
+	'https://www.backend.themoviebakery.com').json()
 json_list = json.dumps(req_ratings, indent=4)
 
 ratings_db = pd.read_json(json_list)
