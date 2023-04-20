@@ -1,8 +1,5 @@
-import numpy as np
 from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
-import pickle
-import os
+# from flask_cors import CORS, cross_origin
 # print('a_shrink_ratings')
 # import data_preprocessing.a_shrink_ratings
 # print('b_userandmovie_newId')
@@ -13,37 +10,36 @@ import os
 # import data_preprocessing.d_data_to_dict
 from models.userbased_class import user_based_model
 
-
 app = Flask(__name__)
-CORS(app, origins=['*themoviebakery.com*', '*localhost*'],
-     methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-     allow_headers=[
-    'X-CSRF-Token',
-    'X-Requested-With',
-    'Accept',
-    'Accept-Version',
-    'Content-Length',
-    'Content-MD5',
-    'Content-Type',
-    'Date',
-    'X-Api-Version',
-    'Authorization',
-], supports_credentials=False)
+
+# CORS(app, origins=['*themoviebakery.com*', '*localhost*'],
+#      methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+#      allow_headers=[
+#     'X-CSRF-Token',
+#     'X-Requested-With',
+#     'Accept',
+#     'Accept-Version',
+#     'Content-Length',
+#     'Content-MD5',
+#     'Content-Type',
+#     'Date',
+#     'X-Api-Version',
+#     'Authorization',
+# ], supports_credentials=False)
+
 recommender = user_based_model()
 
 
 def start_model():
-    print('start_model')
-    # recommender = user_based_model()
     print('calculating_user_neighbors')
     recommender.calculate_user_neighbors()
     print('training_and_testing')
     recommender.train_and_test()
     print('calculating_mse')
-    training_mse = recommender.calculate_mse(
-        recommender.train_predictions, recommender.train_targets)
-    testing_mse = recommender.calculate_mse(
-        recommender.test_predictions, recommender.test_targets)
+    training_mse = recommender.calculate_mse(recommender.train_predictions,
+                                             recommender.train_targets)
+    testing_mse = recommender.calculate_mse(recommender.test_predictions,
+                                            recommender.test_targets)
 
     # recommender.predict_for_user(user_id=4)
 
@@ -51,6 +47,7 @@ def start_model():
     print('TESTING MSE:', testing_mse)
 
 
+print('start_model')
 start_model()
 
 
