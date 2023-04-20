@@ -1,6 +1,6 @@
 import numpy as np
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import pickle
 import os
 # print('a_shrink_ratings')
@@ -15,9 +15,9 @@ from models.userbased_class import user_based_model
 
 
 app = Flask(__name__)
-CORS(app, origins=['*themoviebakery.com*'],
-            methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-            allow_headers=[
+CORS(app, origins=['*themoviebakery.com*', '*localhost*'],
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+     allow_headers=[
     'X-CSRF-Token',
     'X-Requested-With',
     'Accept',
@@ -64,4 +64,6 @@ def recommend():
 
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True, use_reloader=False)
+    # app.run(port=5000, debug=True, use_reloader=False)
+    from waitress import serve
+    serve(app, host='0.0.0.0', port=5000)
