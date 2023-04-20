@@ -15,7 +15,20 @@ from models.userbased_class import user_based_model
 
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=['*themoviebakery.com*'],
+            methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+            allow_headers=[
+    'X-CSRF-Token',
+    'X-Requested-With',
+    'Accept',
+    'Accept-Version',
+    'Content-Length',
+    'Content-MD5',
+    'Content-Type',
+    'Date',
+    'X-Api-Version',
+    'Authorization',
+], supports_credentials=False)
 recommender = user_based_model()
 
 
@@ -37,7 +50,9 @@ def start_model():
     print('TRAINING MSE:', training_mse)
     print('TESTING MSE:', testing_mse)
 
+
 start_model()
+
 
 @app.route('/api', methods=['GET'])
 def recommend():
@@ -49,4 +64,4 @@ def recommend():
 
 
 if __name__ == '__main__':
-        app.run(port=5000, debug=True, use_reloader=False)
+    app.run(port=5000, debug=True, use_reloader=False)

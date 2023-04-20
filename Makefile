@@ -6,3 +6,6 @@ preprocessing:
 
 full: preparation preprocessing
 	python3 src/server.py
+
+only-server:
+	python3 src/server.py
