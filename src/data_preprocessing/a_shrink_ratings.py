@@ -17,7 +17,7 @@ print('ORIGINAL MOVIES QNT:', M)
 user_ids_count = Counter(ratings_df.userId)
 movie_ids_count = Counter(ratings_df.movieId)
 
-n = 50      # qnt of users we want
+n = 500      # qnt of users we want
 m = 4_639    # qnt of movies we want
 
 user_ids = [u for u, _ in user_ids_count.most_common(n)]

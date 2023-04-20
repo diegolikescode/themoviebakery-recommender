@@ -9,3 +9,6 @@ full: preparation preprocessing
 
 only-server:
 	python3 src/server.py
+
+full-forever: preparation preprocessing
+	forever start -c "python3 src/server.py" .

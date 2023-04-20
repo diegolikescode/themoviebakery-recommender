@@ -22,7 +22,7 @@ if len(ratings_db) != 0:
                     labels=['created_at', 'updated_at', 'ratingId'],
                     inplace=True)
     ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
-    ratings_db['userId'] += 49
+    ratings_db['userId'] += 499
 
     ratings_df = pd.concat([ratings_local, ratings_db])
     ratings_df.to_csv(os.path.join(

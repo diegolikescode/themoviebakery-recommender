@@ -1,6 +1,14 @@
 # RECOMMENDER
 
-## QUESTIONS
+## TESTES
+
+### TEXTO COMO FUNCIONA
+
+Então, vou te explicar mais ou menos:
+- tu entra e avalia uns 25 filmes ou mais;
+- o botão de recomendação
+
+### PERGUNTAS
 
 - [ ] de 0 à 10, qual nota você daria para as recomendações que o sistema lhe ofereceu? (0 à 10)
 - [ ] as recomendações foram geradas de forma rápida? (muito rápido, rápido, mais ou menos, devagar muito devagar)
