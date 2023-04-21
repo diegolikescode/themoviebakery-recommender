@@ -30,7 +30,7 @@ app = Flask(__name__)
 recommender = user_based_model()
 
 
-def start_model():
+def training_model():
     print('calculating_user_neighbors')
     recommender.calculate_user_neighbors()
     print('training_and_testing')
@@ -46,9 +46,11 @@ def start_model():
     print('TRAINING MSE:', training_mse)
     print('TESTING MSE:', testing_mse)
 
+    return {'training': 'ok'}
 
-print('start_model')
-start_model()
+
+print('training_model')
+training_model()
 
 
 @app.route('/api', methods=['GET'])
@@ -58,6 +60,14 @@ def recommend():
     recommendations = recommender.recommend_movies_for_users(user_id)
 
     return jsonify(recommendations)
+
+@app.route('/train', methods=['GET'])
+def train():
+	import data_preprocessing.c_add_database_to_ratings
+	import data_preprocessing.d_data_to_dict
+	res = training_model()
+
+	return jsonify(res)
 
 
 if __name__ == '__main__':
