@@ -145,7 +145,7 @@ class user_based_model():
 
     def recommend_movies_for_users(self, user_id):
         predictions = []
-        user_id += 49
+        user_id += 499
         movies = self.movie2user.keys()
 
         for mov in movies:
