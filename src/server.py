@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify
-# from flask_cors import CORS, cross_origin
+from flask import Flask, request, jsonify, json
+from flask_cors import CORS
 # print('a_shrink_ratings')
 # import data_preprocessing.a_shrink_ratings
 # print('b_userandmovie_newId')
@@ -12,20 +12,20 @@ from models.userbased_class import user_based_model
 
 app = Flask(__name__)
 
-# CORS(app, origins=['*themoviebakery.com*', '*localhost*'],
-#      methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-#      allow_headers=[
-#     'X-CSRF-Token',
-#     'X-Requested-With',
-#     'Accept',
-#     'Accept-Version',
-#     'Content-Length',
-#     'Content-MD5',
-#     'Content-Type',
-#     'Date',
-#     'X-Api-Version',
-#     'Authorization',
-# ], supports_credentials=False)
+CORS(app, origins=['*'],
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+     allow_headers=[
+    'X-CSRF-Token',
+    'X-Requested-With',
+    'Accept',
+    'Accept-Version',
+    'Content-Length',
+    'Content-MD5',
+    'Content-Type',
+    'Date',
+    'X-Api-Version',
+    'Authorization',
+], supports_credentials=False)
 
 recommender = user_based_model()
 
@@ -46,8 +46,6 @@ def training_model():
     print('TRAINING MSE:', training_mse)
     print('TESTING MSE:', testing_mse)
 
-    return {'training': 'ok'}
-
 
 print('training_model')
 training_model()
@@ -63,11 +61,15 @@ def recommend():
 
 @app.route('/train', methods=['GET'])
 def train():
+	print('runing c')
 	import data_preprocessing.c_add_database_to_ratings
+	print('runing d')
 	import data_preprocessing.d_data_to_dict
-	res = training_model()
+	print('training')
+	training_model()
 
-	return jsonify(res)
+	print('almost_there')
+	return jsonify({'message': 'ok'})
 
 
 if __name__ == '__main__':
