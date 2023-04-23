@@ -26,7 +26,7 @@ def add_database():
                         labels=['created_at', 'updated_at', 'ratingId'],
                         inplace=True)
         ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
-        ratings_db['userId'] += 49
+        ratings_db['userId'] += 499
         print(ratings_db.tail())
 
         ratings_df = pd.concat([ratings_local, ratings_db])
