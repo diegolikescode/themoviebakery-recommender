@@ -6,31 +6,43 @@ import os
 
 dirname = os.path.dirname(__file__)
 
-ratings_local = pd.read_csv(
-    os.path.join(
-        dirname,
-        '../../data/data-for-analysis/ratings-smaller-with-new-ids.csv'))
 
-req_ratings = requests.get(
-    # 'http://localhost:8080/api/v1/rating/get-all').json()
-    'https://www.backend.themoviebakery.com/api/v1/rating/get-all').json()
-json_list = json.dumps(req_ratings, indent=4)
+def add_database():
+    ratings_local = pd.read_csv(
+        os.path.join(
+            dirname,
+            '../../data/data-for-analysis/ratings-smaller-with-new-ids.csv'))
 
-ratings_db = pd.read_json(json_list)
-if len(ratings_db) != 0:
-    ratings_db.drop(axis=1,
-                    labels=['created_at', 'updated_at', 'ratingId'],
-                    inplace=True)
-    ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
-    ratings_db['userId'] += 499
+    req_ratings = requests.get(
+        # 'http://localhost:8080/api/v1/rating/get-all').json()
+        'https://www.backend.themoviebakery.com/api/v1/rating/get-all').json()
 
-    ratings_df = pd.concat([ratings_local, ratings_db])
-    ratings_df.to_csv(os.path.join(
-        dirname,
-        '../../data/data-for-analysis/ratings-small-with-database.csv'),
-                      index=False)
-else:
-    ratings_local.to_csv(os.path.join(
-        dirname,
-        '../../data/data-for-analysis/ratings-small-with-database.csv'),
-                         index=False)
+    json_list = json.dumps(req_ratings, indent=4)
+    print(json.loads(json_list))
+
+    ratings_db = pd.read_json(json_list)
+    if len(ratings_db) != 0:
+        ratings_db.drop(axis=1,
+                        labels=['created_at', 'updated_at', 'ratingId'],
+                        inplace=True)
+        ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
+        ratings_db['userId'] += 49
+        print(ratings_db.tail())
+
+        ratings_df = pd.concat([ratings_local, ratings_db])
+        ratings_df.to_csv(os.path.join(
+            dirname,
+            '../../data/data-for-analysis/ratings-small-with-database.csv'),
+            index=False)
+    else:
+        ratings_local.to_csv(os.path.join(
+            dirname,
+            '../../data/data-for-analysis/ratings-small-with-database.csv'),
+            index=False)
+
+    del req_ratings
+    del json_list
+    del ratings_db
+
+
+add_database()

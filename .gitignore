@@ -4,3 +4,4 @@ movies.json
 *.json
 process-data
 *.pkl
+__pycache__

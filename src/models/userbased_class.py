@@ -37,8 +37,21 @@ class user_based_model():
         with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings_test.json'), 'rb') as file:
             self.usermovie2ratings_test = pickle.load(file)
 
+    def reload_files(self):
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/user2movie.json'), 'rb') as file:
+            self.user2movie = pickle.load(file)
+
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/movie2user.json'), 'rb') as file:
+            self.movie2user = pickle.load(file)
+
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings.json'), 'rb') as file:
+            self.usermovie2ratings = pickle.load(file)
+
+        with open(os.path.join(dirname, '../../data/data-for-analysis/bin/usermovie2ratings_test.json'), 'rb') as file:
+            self.usermovie2ratings_test = pickle.load(file)
+
     def calculate_user_neighbors(self):
-        N = len(list(self.user2movie.keys()))
+        N = np.amax(list(self.user2movie.keys()))
 
         m1 = len(list(self.movie2user.keys()))
         m2 = len([m for (u, m), r in self.usermovie2ratings_test.items()])
@@ -145,7 +158,7 @@ class user_based_model():
 
     def recommend_movies_for_users(self, user_id):
         predictions = []
-        user_id += 499
+        user_id += 49
         movies = self.movie2user.keys()
 
         for mov in movies:

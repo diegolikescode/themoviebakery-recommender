@@ -9,6 +9,11 @@ from flask_cors import CORS
 # print('d_data_to_dict')
 # import data_preprocessing.d_data_to_dict
 from models.userbased_class import user_based_model
+from  data_preprocessing.c_add_database_to_ratings import add_database
+from data_preprocessing.d_data_to_dict import data_to_dict
+import os
+
+dirname = os.path.dirname(__file__)
 
 app = Flask(__name__)
 
@@ -62,10 +67,11 @@ def recommend():
 @app.route('/train', methods=['GET'])
 def train():
 	print('runing c')
-	import data_preprocessing.c_add_database_to_ratings
+	add_database()
 	print('runing d')
-	import data_preprocessing.d_data_to_dict
+	data_to_dict()
 	print('training')
+	recommender.reload_files()
 	training_model()
 
 	print('almost_there')

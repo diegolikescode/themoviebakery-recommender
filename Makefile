@@ -4,6 +4,9 @@ preparation:
 preprocessing:
 	cd src/data_preprocessing && python3 a_shrink_ratings.py && python3 b_userandmovie_newId.py && python3 c_add_database_to_ratings.py && python3 d_data_to_dict.py
 
+runit:
+	cd src/data_preprocessing && python3 c_add_database_to_ratings.py && python3 d_data_to_dict.py
+
 full: preparation preprocessing
 	python3 src/server.py
 
