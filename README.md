@@ -4,14 +4,15 @@
 
 ### TEXTO COMO FUNCIONA
 <!-- CRIAR ROLTA DE RETREINO NO RECOMENDADOR -->
-Então, vou te explicar mais ou menos:
 
+LINK: https://www.themoviebakery.com/
 - tu entra e avalia 25 filmes ou mais;
-- aí o botão de recomendação fica disponível pra pedir as recomendações de filme;
-- tu pede pro recomendador treinar, e assim q ele estiver pronto você pede as recomendações;
+- aí o botão de recomendação e treinamento fica disponível pra pedir as recomendações de filme;
+- tu pede pro recomendador treinar, e assim q ele estiver pronto você pede as recomendações, pra treinar demora uns 5 ou 6 minutos;
 - pra responder o form seria melhor se o recomendador fosse treinado pelo menos 2x, uma vez pras primeiras recomendações e +1 vez pra ver se ele melhora depois de você avaliar mais filmes
 - OBS: o botão de retreino está sempre disponível, mas é melhor pedir pra retreinar pelo menos a cada 25
 LINK DO FORM: <https://forms.gle/iMgdzpVBKtkXLEu69>
+
 
 ### PERGUNTAS
 
