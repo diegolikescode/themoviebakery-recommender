@@ -119,24 +119,27 @@ class user_based_model():
                 pass
 
     def predict(self, i, m):
-        numerator = 0
-        denominator = 0
+        try:
+            numerator = 0
+            denominator = 0
 
-        for neg_w, j in self.neighbors[i]:
-            try:
-                numerator += -neg_w * self.deviations[j][m]
-                denominator += abs(neg_w)
-            except KeyError:
-                pass
+            for neg_w, j in self.neighbors[i]:
+                try:
+                    numerator += -neg_w * self.deviations[j][m]
+                    denominator += abs(neg_w)
+                except KeyError:
+                    pass
 
-        if denominator == 0:
-            prediction = self.averages[i]
-        else:
-            prediction = numerator / denominator + self.averages[i]
+            if denominator == 0:
+                prediction = self.averages[i]
+            else:
+                prediction = numerator / denominator + self.averages[i]
 
-        prediction = min(5, prediction)
-        prediction = max(0.5, prediction)
-        return prediction
+            prediction = min(5, prediction)
+            prediction = max(0.5, prediction)
+            return prediction
+        except KeyError:
+            pass
 
     def train_and_test(self):
         for (i, m), target in self.usermovie2ratings.items():
@@ -158,7 +161,7 @@ class user_based_model():
 
     def recommend_movies_for_users(self, user_id):
         predictions = []
-        user_id += 499
+        user_id += 49
         movies = self.movie2user.keys()
 
         for mov in movies:

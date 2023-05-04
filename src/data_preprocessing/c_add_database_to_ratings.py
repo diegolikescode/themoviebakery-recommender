@@ -18,7 +18,6 @@ def add_database():
         'https://www.backend.themoviebakery.com/api/v1/rating/get-all').json()
 
     json_list = json.dumps(req_ratings, indent=4)
-    print(json.loads(json_list))
 
     ratings_db = pd.read_json(json_list)
     if len(ratings_db) != 0:
@@ -26,8 +25,7 @@ def add_database():
                         labels=['created_at', 'updated_at', 'ratingId'],
                         inplace=True)
         ratings_db.rename(columns={'ratingValue': 'rating'}, inplace=True)
-        ratings_db['userId'] += 499
-        print(ratings_db.tail())
+        ratings_db['userId'] += 49
 
         ratings_df = pd.concat([ratings_local, ratings_db])
         ratings_df.to_csv(os.path.join(
