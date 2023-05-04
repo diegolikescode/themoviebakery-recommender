@@ -15,3 +15,6 @@ only-server:
 
 full-forever: preparation preprocessing
 	forever start -c "python3 src/server.py" .
+
+nohup: preparation preprocessing
+	cd src && nohup python3 server.py
